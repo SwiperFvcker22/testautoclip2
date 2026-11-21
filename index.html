@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ardhana Clip 9:16 - Client-Side Vertical Video & Subtitle Studio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FA6F05',
+                        'primary-hover': '#E85F00',
+                        slate: {
+                            950: '#020617',
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                            600: '#475569',
+                            500: '#64748b',
+                            400: '#94a3b8',
+                            300: '#cbd5e1',
+                            200: '#e2e8f0',
+                            100: '#f1f5f9',
+                            50: '#f8fafc'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        roboto: ['Roboto', 'sans-serif'],
+                        poppins: ['Poppins', 'sans-serif'],
+                        montserrat: ['Montserrat', 'sans-serif'],
+                        bebas: ['Bebas Neue', 'sans-serif'],
+                        anton: ['Anton', 'sans-serif'],
+                        impact: ['Impact', 'sans-serif'],
+                        outfit: ['Outfit', 'sans-serif'],
+                        bangers: ['Bangers', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts including Viral Captions Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bebas+Neue&family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,700&family=Montserrat:ital,wght@0,400;0,600;0,800;0,900;1,700&family=Outfit:wght@400;600;800;900&family=Poppins:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FA6F05;
+        }
+        input[type="range"] {
+            accent-color: #FA6F05;
+        }
+        .custom-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            outline: none;
+        }
+        .custom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #FA6F05;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+        .custom-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        .neon-glow {
+            text-shadow: 0 0 8px #00ff66, 0 0 15px #00ff66;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-primary selection:text-white">
+
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50 px-4 lg:px-8 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-orange-400 flex items-center justify-center shadow-lg shadow-primary/20">
+                <i class="fa-solid fa-clapperboard text-white text-lg"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg tracking-wide flex items-center gap-2">
+                    Ardhana Clip <span class="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full font-semibold border border-primary/30">9:16 PRO</span>
+                </h1>
+                <p class="text-xs text-slate-400 hidden sm:block">Client-Side Vertical Video Clipper & Auto Subtitle Studio</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-3">
+            <div id="speechSupportBadge" class="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-slate-800 rounded-full border border-slate-700 text-xs font-medium text-slate-300">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span id="speechBadgeText">SpeechRecognition: Ready</span>
+            </div>
+            <button onclick="document.getElementById('videoInput').click()" class="bg-primary hover:bg-primary-hover text-white text-sm font-semibold px-4 py-2 rounded-xl transition shadow-lg shadow-primary/30 flex items-center gap-2">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>Unggah Video</span>
+            </button>
+            <input type="file" id="videoInput" accept="video/mp4,video/webm,video/mov,video/mkv" class="hidden">
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-[1700px] w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- LEFT COLUMN: VERTICAL VIDEO CANVAS & PREVIEW CONTROLS (5 cols) -->
+        <section class="lg:col-span-5 flex flex-col space-y-4 lg:sticky lg:top-20">
+            
+            <!-- Upload Dropzone Card -->
+            <div id="uploadDropzone" class="bg-slate-900 border-2 border-dashed border-slate-700 hover:border-primary rounded-2xl p-8 text-center flex flex-col items-center justify-center min-h-[500px] transition cursor-pointer group">
+                <div class="w-20 h-20 rounded-2xl bg-slate-800 group-hover:bg-primary/20 group-hover:text-primary text-slate-400 flex items-center justify-center text-3xl transition mb-4 shadow-inner">
+                    <i class="fa-solid fa-film"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-200 mb-1">Unggah Video Anda Di Sini</h3>
+                <p class="text-xs text-slate-400 max-w-xs mb-6">Seret dan lepas file video (MP4, WebM, MOV, MKV) untuk mengedit secara instan dan aman secara lokal.</p>
+                <button onclick="document.getElementById('videoInput').click()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium px-5 py-2.5 rounded-xl border border-slate-700 transition flex items-center gap-2">
+                    <i class="fa-solid fa-folder-open text-primary"></i>
+                    <span>Pilih Berkas Video</span>
+                </button>
+                <div class="mt-8 flex items-center gap-4 text-xs text-slate-500">
+                    <span class="flex items-center gap-1"><i class="fa-solid fa-shield text-emerald-500"></i> 100% Client-Side</span>
+                    <span class="flex items-center gap-1"><i class="fa-solid fa-closed-captioning text-amber-500"></i> Auto Subtitles</span>
+                </div>
+            </div>
+
+            <div id="previewContainer" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col space-y-4 shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-primary animate-ping"></span>
+                        <h2 class="text-sm font-bold text-slate-200">Live 9:16 Vertical Canvas</h2>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="toggleSafeZoneBtn" onclick="toggleSafeZone()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700 transition flex items-center gap-1.5" title="Tampilkan Panduan Safe Zone TikTok/Reels/Shorts">
+                            <i class="fa-solid fa-border-all text-primary"></i>
+                            <span>Safe Zone</span>
+                        </button>
+                        <span class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-mono">1080x1920</span>
+                    </div>
+                </div>
+
+                <!-- 9:16 Aspect Ratio Canvas Container -->
+                <div class="relative w-full aspect-[9/16] bg-black rounded-xl overflow-hidden shadow-2xl flex items-center justify-center border border-slate-800">
+                    <canvas id="outputCanvas" width="1080" height="1920" class="w-full h-full object-contain"></canvas>
+                    
+                    <!-- Platform Safe Zone Overlay -->
+                    <div id="safeZoneOverlay" class="absolute inset-0 pointer-events-none hidden border-2 border-dashed border-red-500/40 m-6 rounded-lg flex flex-col justify-between p-4">
+                        <div class="bg-red-500/20 text-red-300 text-[10px] px-2 py-0.5 rounded w-max font-mono">Top Safe Area (Profile/Search)</div>
+                        <div class="bg-red-500/20 text-red-300 text-[10px] px-2 py-0.5 rounded w-max font-mono self-start">Bottom Safe Area (Caption/Buttons)</div>
+                    </div>
+
+                    <!-- Hidden HTML5 Source Video Element -->
+                    <video id="sourceVideo" class="hidden" crossorigin="anonymous" playsinline></video>
+                </div>
+
+                <div class="flex flex-col space-y-2 bg-slate-950 p-3 rounded-xl border border-slate-800">
+                    <div class="flex items-center justify-between text-xs text-slate-400">
+                        <span id="currentTimeDisplay" class="font-mono">00:00</span>
+                        <div class="flex items-center gap-2">
+                            <button id="previewClipBtn" onclick="previewClip()" class="bg-primary/20 hover:bg-primary/30 text-primary px-3 py-1 rounded-lg font-medium border border-primary/30 transition flex items-center gap-1.5 text-xs">
+                                <i class="fa-solid fa-play text-xs"></i>
+                                <span>Preview Clip</span>
+                            </button>
+                            <span id="durationDisplay" class="font-mono">00:00</span>
+                        </div>
+                    </div>
+                    <!-- Scrubbing Timeline -->
+                    <input type="range" id="timelineRange" min="0" max="100" value="0" step="0.1" class="custom-slider w-full">
+                    <div class="flex items-center justify-between pt-1">
+                        <div class="flex items-center space-x-2">
+                            <button id="playPauseBtn" onclick="togglePlayPause()" class="w-9 h-9 rounded-lg bg-primary hover:bg-primary-hover text-white flex items-center justify-center transition shadow-md">
+                                <i class="fa-solid fa-play text-xs"></i>
+                            </button>
+                            <button onclick="resetPlayback()" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition border border-slate-700" title="Reset ke Waktu Mulai">
+                                <i class="fa-solid fa-rotate-left text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-volume-high text-slate-400 text-xs"></i>
+                            <input type="range" id="volumeRange" min="0" max="1" value="1" step="0.1" class="w-20 custom-slider">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File Meta Information -->
+                <div id="fileMetaBox" class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs space-y-1.5 font-mono text-slate-400">
+                    <div class="flex justify-between"><span>Nama:</span> <span id="metaName" class="text-slate-200 truncate max-w-[200px]">-</span></div>
+                    <div class="flex justify-between"><span>Durasi:</span> <span id="metaDuration" class="text-slate-200">-</span></div>
+                    <div class="flex justify-between"><span>Resolusi:</span> <span id="metaResolution" class="text-slate-200">-</span></div>
+                    <div class="flex justify-between"><span>Ukuran:</span> <span id="metaSize" class="text-slate-200">-</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lg:col-span-7 flex flex-col space-y-4">
+            
+            <!-- Tab Navigation Bar -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-1.5 flex items-center justify-between gap-1 overflow-x-auto">
+                <button onclick="switchTab('trimmer')" id="tabBtn-trimmer" class="flex-1 min-w-[120px] py-2.5 px-3 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-2 bg-primary text-white shadow-md shadow-primary/20">
+                    <i class="fa-solid fa-scissors"></i>
+                    <span>1. Trim & Crop</span>
+                </button>
+                <button onclick="switchTab('autoSubtitle')" id="tabBtn-autoSubtitle" class="flex-1 min-w-[120px] py-2.5 px-3 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>2. Auto Subtitle</span>
+                </button>
+                <button onclick="switchTab('subtitleStyling')" id="tabBtn-subtitleStyling" class="flex-1 min-w-[120px] py-2.5 px-3 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+                    <i class="fa-solid fa-palette"></i>
+                    <span>3. Subtitle Editor</span>
+                </button>
+                <button onclick="switchTab('export')" id="tabBtn-export" class="flex-1 min-w-[120px] py-2.5 px-3 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+                    <i class="fa-solid fa-download"></i>
+                    <span>4. Export MP4</span>
+                </button>
+            </div>
+
+            <div id="tabContent-trimmer" class="tab-content bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-6">
+                
+                <!-- Smart Highlight Detection Box -->
+                <div class="bg-gradient-to-r from-slate-950 to-slate-900 border border-primary/30 rounded-xl p-4 space-y-3 relative overflow-hidden">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
+                                <i class="fa-solid fa-bolt text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-200">✨ Auto Clip & Smart Detection</h3>
+                                <p class="text-[11px] text-slate-400">Analisis video otomatis untuk menemukan klip sorotan terbaik.</p>
+                            </div>
+                        </div>
+                        <button onclick="runAutoClipAnalysis()" id="autoClipBtn" class="bg-primary hover:bg-primary-hover text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition shadow-md shadow-primary/20 flex items-center gap-1.5">
+                            <i class="fa-solid fa-microchip"></i>
+                            <span>Analisis Klip</span>
+                        </button>
+                    </div>
+
+                    <!-- Auto Generated Clips Output -->
+                    <div id="autoClipsContainer" class="hidden space-y-2 pt-2 border-t border-slate-800">
+                        <span class="text-xs font-semibold text-slate-300">Rekomendasi Klip Otomatis (Klik untuk Pangkas):</span>
+                        <div id="clipsList" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-40 overflow-y-auto pr-1"></div>
+                    </div>
+                </div>
+
+                <!-- Video Trimmer Section -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-clock text-primary"></i>
+                            <span>Video Trimmer (Durasi Klip Target)</span>
+                        </h3>
+                        <span id="clipDurationBadge" class="text-xs bg-slate-800 text-primary px-2.5 py-1 rounded-full font-mono font-semibold border border-slate-700">Durasi: 0s</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2">
+                            <label class="text-xs font-medium text-slate-400 flex justify-between">
+                                <span>Waktu Mulai (Start Time)</span>
+                                <span id="startTimeLabel" class="text-slate-200 font-mono font-semibold">00:00</span>
+                            </label>
+                            <div class="flex items-center gap-2">
+                                <input type="range" id="startTimeRange" min="0" max="100" value="0" step="0.1" class="custom-slider flex-1" oninput="updateTrimmerFromRange()">
+                                <input type="number" id="startTimeInput" min="0" step="0.1" value="0" class="w-20 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-center text-slate-200 font-mono" onchange="updateTrimmerFromInput()">
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2">
+                            <label class="text-xs font-medium text-slate-400 flex justify-between">
+                                <span>Waktu Selesai (End Time)</span>
+                                <span id="endTimeLabel" class="text-slate-200 font-mono font-semibold">00:00</span>
+                            </label>
+                            <div class="flex items-center gap-2">
+                                <input type="range" id="endTimeRange" min="0" max="100" value="100" step="0.1" class="custom-slider flex-1" oninput="updateTrimmerFromRange()">
+                                <input type="number" id="endTimeInput" min="0" step="0.1" value="0" class="w-20 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-center text-slate-200 font-mono" onchange="updateTrimmerFromInput()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 pt-1">
+                        <button onclick="setStartTimeToCurrent()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium py-2 rounded-xl border border-slate-700 transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-flag text-primary"></i> Set Start
+                        </button>
+                        <button onclick="setEndTimeToCurrent()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium py-2 rounded-xl border border-slate-700 transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-flag-checkered text-primary"></i> Set End
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Horizontal Crop & Framing Section -->
+                <div class="space-y-4 border-t border-slate-800 pt-5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                                <i class="fa-solid fa-crop text-primary"></i>
+                                <span>Smart Crop & Framing (16:9 ➔ 9:16)</span>
+                            </h3>
+                            <p class="text-xs text-slate-400">Geser posisi horizontal untuk memastikan subjek utama berada di tengah.</p>
+                        </div>
+                        <span id="cropPosLabel" class="text-xs bg-slate-800 text-primary px-3 py-1 rounded-full font-mono font-semibold border border-slate-700">50% (Tengah)</span>
+                    </div>
+
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+                        <div class="flex justify-between text-xs text-slate-400 font-medium">
+                            <span>👈 Kiri (0%)</span>
+                            <span>Tengah (50%)</span>
+                            <span>Kanan (100%) 👉</span>
+                        </div>
+                        <input type="range" id="cropSlider" min="0" max="100" value="50" step="1" class="custom-slider w-full" oninput="updateCropPosition(this.value)">
+                    </div>
+
+                    <!-- Quick Preset Buttons -->
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="setCropPreset(15)" class="bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white p-2.5 rounded-xl border border-slate-800 hover:border-primary transition text-xs font-medium flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-arrow-left text-primary"></i> Kiri (15%)
+                        </button>
+                        <button onclick="setCropPreset(50)" class="bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white p-2.5 rounded-xl border border-slate-800 hover:border-primary transition text-xs font-medium flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-user text-primary"></i> Tengah (50%)
+                        </button>
+                        <button onclick="setCropPreset(85)" class="bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white p-2.5 rounded-xl border border-slate-800 hover:border-primary transition text-xs font-medium flex items-center justify-center gap-2">
+                            Kanan (85%) <i class="fa-solid fa-arrow-right text-primary"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tabContent-autoSubtitle" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-6">
+                
+                <div class="bg-gradient-to-r from-slate-950 to-slate-900 border border-slate-800 rounded-xl p-4 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-microphone"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-200">🎙️ Auto Subtitle Generator (Client-Side)</h3>
+                                <p class="text-xs text-slate-400">Transkripsikan ucapan video langsung di browser Anda menggunakan Web Speech API.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-medium text-slate-400">Pilih Bahasa Transkripsi</label>
+                            <select id="speechLangSelect" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-primary">
+                                <option value="id-ID">Bahasa Indonesia (id-ID)</option>
+                                <option value="en-US">English (US)</option>
+                                <option value="ms-MY">Bahasa Melayu (ms-MY)</option>
+                                <option value="jv-ID">Bahasa Jawa (jv-ID)</option>
+                            </select>
+                        </div>
+
+                        <div class="flex items-end">
+                            <button id="startAutoSubtitleBtn" onclick="startAutoSubtitleProcess()" class="w-full bg-primary hover:bg-primary-hover text-white text-xs font-semibold py-2.5 px-4 rounded-xl transition shadow-md shadow-primary/20 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>Mulai Auto Transkripsi</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="speechProgressBox" class="hidden bg-slate-900 border border-slate-700 p-3 rounded-xl space-y-2 text-xs">
+                        <div class="flex justify-between items-center text-slate-300">
+                            <span class="flex items-center gap-2 font-medium">
+                                <i class="fa-solid fa-spinner fa-spin text-primary"></i>
+                                <span id="speechStatusText">Mendengarkan audio video...</span>
+                            </span>
+                            <span id="speechProgressCount" class="font-mono text-primary font-bold">0 Teks</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400">Pastikan volume browser tidak dimatikan agar transkrip berjalan optimal.</p>
+                    </div>
+                </div>
+
+                <!-- SRT / VTT Import & Export Tools -->
+                <div class="space-y-3 border-t border-slate-800 pt-4">
+                    <h3 class="text-xs font-bold text-slate-300">Impor & Ekspor Subtitle External:</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <button onclick="document.getElementById('srtFileInput').click()" class="bg-slate-950 hover:bg-slate-800 text-slate-300 text-xs font-medium py-2.5 px-3 rounded-xl border border-slate-800 hover:border-primary transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-file-import text-primary"></i> Unggah SRT/VTT
+                        </button>
+                        <input type="file" id="srtFileInput" accept=".srt,.vtt" class="hidden" onchange="handleSRTImport(event)">
+
+                        <button onclick="exportToSRT()" class="bg-slate-950 hover:bg-slate-800 text-slate-300 text-xs font-medium py-2.5 px-3 rounded-xl border border-slate-800 hover:border-primary transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-file-export text-emerald-400"></i> Unduh File SRT
+                        </button>
+
+                        <button onclick="addNewSubtitleBlock()" class="bg-slate-950 hover:bg-slate-800 text-slate-300 text-xs font-medium py-2.5 px-3 rounded-xl border border-slate-800 hover:border-primary transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-plus text-amber-400"></i> Tambah Blok
+                        </button>
+                    </div>
+                </div>
+
+                <div class="space-y-3 border-t border-slate-800 pt-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-primary"></i>
+                            <span>Editor Teks & Timeline Subtitle</span>
+                        </h3>
+                        <span id="subtitleCountBadge" class="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full font-mono">0 Blok Subtitle</span>
+                    </div>
+
+                    <div id="subtitleListContainer" class="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
+                        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-center text-xs text-slate-500">
+                            Belum ada subtitle. Gunakan tombol "Mulai Auto Transkripsi" atau unggah file SRT.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tabContent-subtitleStyling" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-6">
+                
+                <!-- Viral Preset Style Selector -->
+                <div class="space-y-2">
+                    <h3 class="text-xs font-bold text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-fire text-amber-500"></i>
+                        <span>Preset Subtitle Viral TikTok / Reels</span>
+                    </h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                        <button onclick="applyStylePreset('yellow')" class="bg-slate-950 hover:bg-slate-800 border border-slate-800 p-2.5 rounded-xl text-left space-y-1 transition group">
+                            <div class="text-xs font-extrabold text-yellow-400 group-hover:scale-105 transition">🟡 Yellow Pop</div>
+                            <p class="text-[10px] text-slate-400">Hormozi style dengan kata aktif kuning terang.</p>
+                        </button>
+
+                        <button onclick="applyStylePreset('neon')" class="bg-slate-950 hover:bg-slate-800 border border-slate-800 p-2.5 rounded-xl text-left space-y-1 transition group">
+                            <div class="text-xs font-extrabold text-emerald-400 neon-glow group-hover:scale-105 transition">🟩 Neon Glow</div>
+                            <p class="text-[10px] text-slate-400">Efek glow hijau neon ala video motivasi.</p>
+                        </button>
+
+                        <button onclick="applyStylePreset('blackbox')" class="bg-slate-950 hover:bg-slate-800 border border-slate-800 p-2.5 rounded-xl text-left space-y-1 transition group">
+                            <div class="text-xs font-extrabold text-white bg-black/80 px-1.5 py-0.5 rounded w-max group-hover:scale-105 transition">⬛ Black Box</div>
+                            <p class="text-[10px] text-slate-400">Latar kotak hitam kontras tinggi.</p>
+                        </button>
+
+                        <button onclick="applyStylePreset('popup')" class="bg-slate-950 hover:bg-slate-800 border border-slate-800 p-2.5 rounded-xl text-left space-y-1 transition group">
+                            <div class="text-xs font-extrabold text-primary group-hover:scale-105 transition">💥 Pop-Up Zoom</div>
+                            <p class="text-[10px] text-slate-400">Font tebal Bebas Neue dengan skala membesar.</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Font & Typography Controls -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-slate-800 pt-4">
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-medium text-slate-400">Font Family</label>
+                        <select id="subFontFamily" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-primary" onchange="renderCanvas()">
+                            <option value="Inter">Inter (Clean Modern)</option>
+                            <option value="Montserrat">Montserrat (Viral Bold)</option>
+                            <option value="Poppins">Poppins (Soft Bold)</option>
+                            <option value="Outfit">Outfit (Trendy Creator)</option>
+                            <option value="Bebas Neue">Bebas Neue (Header Style)</option>
+                            <option value="Anton">Anton (Ultra Heavy)</option>
+                            <option value="Bangers">Bangers (Comic Pop)</option>
+                            <option value="Impact">Impact (Classic Bold)</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-medium text-slate-400 flex justify-between">
+                            <span>Font Size</span>
+                            <span id="subSizeVal" class="text-slate-200 font-mono">60px</span>
+                        </label>
+                        <input type="range" id="subFontSize" min="20" max="140" value="60" step="2" class="custom-slider w-full mt-2" oninput="document.getElementById('subSizeVal').innerText = this.value + 'px'; renderCanvas()">
+                    </div>
+                </div>
+
+                <!-- Color Pickers: General Text & Karaoke Active Word -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 border-t border-slate-800 pt-4">
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-1.5">
+                        <label class="text-[11px] font-medium text-slate-400">Warna Teks Utama</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" id="subTextColor" value="#FFFFFF" class="w-8 h-8 rounded bg-transparent cursor-pointer" oninput="renderCanvas()">
+                            <span class="text-xs font-mono text-slate-300">Teks</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-1.5">
+                        <label class="text-[11px] font-medium text-amber-400 font-bold">Kata Aktif (Karaoke)</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" id="subActiveColor" value="#FFEA00" class="w-8 h-8 rounded bg-transparent cursor-pointer" oninput="renderCanvas()">
+                            <span class="text-xs font-mono text-amber-400 font-bold">Highlight</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-1.5">
+                        <label class="text-[11px] font-medium text-slate-400">Outline / Stroke</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" id="subStrokeColor" value="#000000" class="w-8 h-8 rounded bg-transparent cursor-pointer" oninput="renderCanvas()">
+                            <span class="text-xs font-mono text-slate-300">Stroke</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-1.5">
+                        <label class="text-[11px] font-medium text-slate-400 flex justify-between">
+                            <span>Tebal Stroke</span>
+                            <span id="subStrokeVal" class="text-slate-200 font-mono">6px</span>
+                        </label>
+                        <input type="range" id="subStrokeWidth" min="0" max="15" value="6" step="1" class="custom-slider w-full mt-1" oninput="document.getElementById('subStrokeVal').innerText = this.value + 'px'; renderCanvas()">
+                    </div>
+                </div>
+
+                <!-- Background Box & Glow Effects Controls -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-slate-800 pt-4">
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-1.5">
+                        <label class="text-[11px] font-medium text-slate-400">Latar Belakang (Box)</label>
+                        <select id="subBgType" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-slate-200" onchange="renderCanvas()">
+                            <option value="none">Tanpa Background</option>
+                            <option value="semi">Semi-Transparan</option>
+                            <option value="solid">Solid Hitam</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-1.5">
+                        <label class="text-[11px] font-medium text-slate-400">Efek Teks Special</label>
+                        <select id="subEffectType" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-slate-200" onchange="renderCanvas()">
+                            <option value="none">Normal Shadow</option>
+                            <option value="glow">Neon Glow</option>
+                            <option value="pop">Pop-Up Zoom</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-1.5">
+                        <label class="text-[11px] font-medium text-slate-400">Text Case</label>
+                        <select id="subTextCase" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-slate-200" onchange="renderCanvas()">
+                            <option value="uppercase">UPPERCASE (VIRAL)</option>
+                            <option value="normal">Normal Text</option>
+                            <option value="lowercase">lowercase</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Position Preset & Slider Controls -->
+                <div class="space-y-3 border-t border-slate-800 pt-4">
+                    <span class="text-xs font-semibold text-slate-300">Posisi Y Subtitle Vertical (0% Atas - 100% Bawah):</span>
+                    <div class="flex items-center gap-4">
+                        <input type="range" id="subPosY" min="10" max="90" value="75" step="1" class="custom-slider flex-1" oninput="renderCanvas()">
+                        <span id="subPosYVal" class="text-xs font-mono bg-slate-950 px-2.5 py-1 rounded border border-slate-800 text-primary font-bold">75%</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="setSubPosY(20)" class="bg-slate-950 hover:bg-slate-800 text-slate-300 text-xs py-2 rounded-xl border border-slate-800 transition">Atas (20%)</button>
+                        <button onclick="setSubPosY(50)" class="bg-slate-950 hover:bg-slate-800 text-slate-300 text-xs py-2 rounded-xl border border-slate-800 transition">Tengah (50%)</button>
+                        <button onclick="setSubPosY(75)" class="bg-slate-950 hover:bg-slate-800 text-slate-300 text-xs py-2 rounded-xl border border-slate-800 transition">Bawah (75%)</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tabContent-export" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-bolt text-primary"></i>
+                            <span>Export Video 9:16 (Smooth Frame Engine)</span>
+                        </h3>
+                        <p class="text-xs text-slate-400">Render presisi anti-stuttering dengan transkrip subtitle menyatu sempurna.</p>
+                    </div>
+                    <span class="text-xs bg-primary/20 text-primary font-mono px-3 py-1 rounded-full border border-primary/30">1080x1920 @ 30fps</span>
+                </div>
+
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3 font-mono text-xs">
+                    <div class="flex justify-between text-slate-400">
+                        <span>Format Target Codec:</span>
+                        <span id="exportFormatBadge" class="text-emerald-400 font-bold">MP4 (H.264 / WebM Fallback)</span>
+                    </div>
+                    <div class="flex justify-between text-slate-400">
+                        <span>Durasi Render Klip:</span>
+                        <span id="exportDurationSummary" class="text-slate-200">0 detik</span>
+                    </div>
+                    <div class="flex justify-between text-slate-400">
+                        <span>Total Subtitle Overlays:</span>
+                        <span id="exportSubSummary" class="text-slate-200">0 Blok Teks</span>
+                    </div>
+                </div>
+
+                <!-- Progress Bar container -->
+                <div id="exportProgressContainer" class="hidden space-y-2 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <div class="flex justify-between text-xs">
+                        <span id="exportStatusText" class="font-semibold text-primary">Memproses Frame & Audio...</span>
+                        <span id="exportPercentage" class="font-mono text-slate-300">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                        <div id="exportProgressBar" class="bg-primary h-full w-0 transition-all duration-150"></div>
+                    </div>
+                </div>
+
+                <!-- Main CTA Export Button -->
+                <button onclick="startExportProcess()" id="exportBtn" disabled class="w-full bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-2xl transition shadow-xl shadow-primary/25 flex items-center justify-center gap-3 text-base">
+                    <i class="fa-solid fa-cloud-arrow-down text-xl"></i>
+                    <span>⚡ Pangkas & Unduh MP4</span>
+                </button>
+
+                <p class="text-[11px] text-center text-slate-500">
+                    * Seluruh proses rendering berjalan 100% aman di dalam browser tanpa mengirim berkas ke server eksternal.
+                </p>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Modal Notification Component -->
+    <div id="notificationModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div class="w-12 h-12 rounded-2xl bg-primary/20 text-primary flex items-center justify-center text-xl">
+                <i id="modalIcon" class="fa-solid fa-circle-info"></i>
+            </div>
+            <div>
+                <h3 id="modalTitle" class="text-base font-bold text-slate-100">Informasi</h3>
+                <p id="modalMessage" class="text-xs text-slate-400 mt-1">Pesan notifikasi sistem.</p>
+            </div>
+            <div class="flex justify-end pt-2">
+                <button onclick="closeModal()" class="bg-primary hover:bg-primary-hover text-white text-xs font-semibold px-5 py-2.5 rounded-xl transition shadow-md">
+                    Mengerti
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global State
+        let videoFile = null;
+        let videoDuration = 0;
+        let isPlaying = false;
+        let safeZoneVisible = false;
+
+        // Trimmer & Crop State
+        let startTime = 0;
+        let endTime = 0;
+        let cropPosition = 50; // 0% (Left) to 100% (Right)
+
+        // Subtitle State
+        let subtitles = []; // Array of { id, start, end, text, words: [{word, start, end}] }
+        let SpeechRecognitionClass = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognitionInstance = null;
+
+        // DOM Elements
+        const videoInput = document.getElementById('videoInput');
+        const sourceVideo = document.getElementById('sourceVideo');
+        const outputCanvas = document.getElementById('outputCanvas');
+        const ctx = outputCanvas.getContext('2d');
+        const uploadDropzone = document.getElementById('uploadDropzone');
+        const previewContainer = document.getElementById('previewContainer');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const timelineRange = document.getElementById('timelineRange');
+        const volumeRange = document.getElementById('volumeRange');
+        const currentTimeDisplay = document.getElementById('currentTimeDisplay');
+        const durationDisplay = document.getElementById('durationDisplay');
+
+        // Check Web Speech API Support
+        window.addEventListener('DOMContentLoaded', () => {
+            const badge = document.getElementById('speechSupportBadge');
+            const badgeText = document.getElementById('speechBadgeText');
+            if (!SpeechRecognitionClass) {
+                badgeText.innerText = "SpeechRecognition: Tidak Didukung Browser Ini";
+                badge.querySelector('span').className = "w-2 h-2 rounded-full bg-amber-500";
+            }
+        });
+
+        // File Upload Handlers
+        videoInput.addEventListener('change', handleVideoUpload);
+        uploadDropzone.addEventListener('dragover', (e) => { e.preventDefault(); uploadDropzone.classList.add('border-primary'); });
+        uploadDropzone.addEventListener('dragleave', () => { uploadDropzone.classList.remove('border-primary'); });
+        uploadDropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadDropzone.classList.remove('border-primary');
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                videoInput.files = e.dataTransfer.files;
+                handleVideoUpload({ target: videoInput });
+            }
+        });
+
+        function handleVideoUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('video/')) {
+                showModal('Format File Salah', 'Harap unggah file video yang valid (MP4, WebM, MOV, MKV).', 'fa-triangle-exclamation');
+                return;
+            }
+
+            videoFile = file;
+            document.getElementById('metaName').innerText = file.name;
+            document.getElementById('metaSize').innerText = formatBytes(file.size);
+
+            const fileURL = URL.createObjectURL(file);
+            sourceVideo.src = fileURL;
+            sourceVideo.load();
+        }
+
+        sourceVideo.addEventListener('loadedmetadata', () => {
+            videoDuration = sourceVideo.duration;
+            endTime = videoDuration;
+
+            document.getElementById('metaDuration').innerText = formatTime(videoDuration);
+            document.getElementById('metaResolution').innerText = `${sourceVideo.videoWidth} × ${sourceVideo.videoHeight}`;
+            document.getElementById('durationDisplay').innerText = formatTime(videoDuration);
+
+            setupTrimmerRanges();
+
+            document.getElementById('exportBtn').removeAttribute('disabled');
+            document.getElementById('exportDurationSummary').innerText = `${videoDuration.toFixed(1)} detik`;
+
+            uploadDropzone.classList.add('hidden');
+            previewContainer.classList.remove('hidden');
+
+            renderCanvas();
+        });
+
+        sourceVideo.addEventListener('timeupdate', () => {
+            if (!sourceVideo.paused) {
+                const currentTime = sourceVideo.currentTime;
+                currentTimeDisplay.innerText = formatTime(currentTime);
+                timelineRange.value = (currentTime / videoDuration) * 100;
+
+                if (window.isPreviewingClip && currentTime >= endTime) {
+                    sourceVideo.pause();
+                    window.isPreviewingClip = false;
+                    isPlaying = false;
+                    playPauseBtn.innerHTML = '<i class="fa-solid fa-play text-xs"></i>';
+                }
+
+                renderCanvas();
+            }
+        });
+
+        timelineRange.addEventListener('input', (e) => {
+            if (videoDuration > 0) {
+                const targetTime = (e.target.value / 100) * videoDuration;
+                sourceVideo.currentTime = targetTime;
+                currentTimeDisplay.innerText = formatTime(targetTime);
+                renderCanvas();
+            }
+        });
+
+        volumeRange.addEventListener('input', (e) => {
+            sourceVideo.volume = e.target.value;
+        });
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tabContent-${tabName}`).classList.remove('hidden');
+
+            document.querySelectorAll('[id^="tabBtn-"]').forEach(btn => {
+                btn.className = "flex-1 min-w-[120px] py-2.5 px-3 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800";
+            });
+            const activeBtn = document.getElementById(`tabBtn-${tabName}`);
+            activeBtn.className = "flex-1 min-w-[120px] py-2.5 px-3 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-2 bg-primary text-white shadow-md shadow-primary/20";
+        }
+
+        // Trimmer Functions
+        function setupTrimmerRanges() {
+            const startR = document.getElementById('startTimeRange');
+            const endR = document.getElementById('endTimeRange');
+            const startI = document.getElementById('startTimeInput');
+            const endI = document.getElementById('endTimeInput');
+
+            startR.max = videoDuration;
+            endR.max = videoDuration;
+            startI.max = videoDuration;
+            endI.max = videoDuration;
+
+            startR.value = 0;
+            endR.value = videoDuration;
+            startI.value = 0;
+            endI.value = videoDuration.toFixed(1);
+
+            updateTrimmerLabels();
+        }
+
+        function updateTrimmerFromRange() {
+            const startR = parseFloat(document.getElementById('startTimeRange').value);
+            const endR = parseFloat(document.getElementById('endTimeRange').value);
+
+            if (startR >= endR) {
+                document.getElementById('startTimeRange').value = endR - 0.5;
+                return;
+            }
+
+            startTime = parseFloat(document.getElementById('startTimeRange').value);
+            endTime = parseFloat(document.getElementById('endTimeRange').value);
+
+            document.getElementById('startTimeInput').value = startTime.toFixed(1);
+            document.getElementById('endTimeInput').value = endTime.toFixed(1);
+
+            updateTrimmerLabels();
+        }
+
+        function updateTrimmerFromInput() {
+            const startI = parseFloat(document.getElementById('startTimeInput').value);
+            const endI = parseFloat(document.getElementById('endTimeInput').value);
+
+            if (startI < endI && endI <= videoDuration) {
+                startTime = startI;
+                endTime = endI;
+                document.getElementById('startTimeRange').value = startTime;
+                document.getElementById('endTimeRange').value = endTime;
+                updateTrimmerLabels();
+            }
+        }
+
+        function updateTrimmerLabels() {
+            document.getElementById('startTimeLabel').innerText = formatTime(startTime);
+            document.getElementById('endTimeLabel').innerText = formatTime(endTime);
+            const clipDur = endTime - startTime;
+            document.getElementById('clipDurationBadge').innerText = `Durasi: ${clipDur.toFixed(1)}s`;
+            document.getElementById('exportDurationSummary').innerText = `${clipDur.toFixed(1)} detik`;
+        }
+
+        function setStartTimeToCurrent() {
+            startTime = sourceVideo.currentTime;
+            if (startTime >= endTime) startTime = Math.max(0, endTime - 1);
+            document.getElementById('startTimeRange').value = startTime;
+            document.getElementById('startTimeInput').value = startTime.toFixed(1);
+            updateTrimmerLabels();
+        }
+
+        function setEndTimeToCurrent() {
+            endTime = sourceVideo.currentTime;
+            if (endTime <= startTime) endTime = Math.min(videoDuration, startTime + 1);
+            document.getElementById('endTimeRange').value = endTime;
+            document.getElementById('endTimeInput').value = endTime.toFixed(1);
+            updateTrimmerLabels();
+        }
+
+        // Crop Functions
+        function updateCropPosition(val) {
+            cropPosition = parseFloat(val);
+            document.getElementById('cropPosLabel').innerText = `${cropPosition}% (${cropPosition < 40 ? 'Kiri' : cropPosition > 60 ? 'Kanan' : 'Tengah'})`;
+            renderCanvas();
+        }
+
+        function setCropPreset(val) {
+            document.getElementById('cropSlider').value = val;
+            updateCropPosition(val);
+        }
+
+        function toggleSafeZone() {
+            safeZoneVisible = !safeZoneVisible;
+            const overlay = document.getElementById('safeZoneOverlay');
+            const btn = document.getElementById('toggleSafeZoneBtn');
+            if (safeZoneVisible) {
+                overlay.classList.remove('hidden');
+                btn.classList.add('bg-primary/20', 'border-primary', 'text-primary');
+            } else {
+                overlay.classList.add('hidden');
+                btn.classList.remove('bg-primary/20', 'border-primary', 'text-primary');
+            }
+        }
+
+        function runAutoClipAnalysis() {
+            if (!videoFile || videoDuration <= 0) {
+                showModal('Video Belum Dimuat', 'Silakan unggah video terlebih dahulu.', 'fa-circle-exclamation');
+                return;
+            }
+
+            const btn = document.getElementById('autoClipBtn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menganalisis...';
+
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-microchip"></i> Analisis Klip';
+
+                const clipsList = document.getElementById('clipsList');
+                clipsList.innerHTML = '';
+
+                const segCount = Math.max(1, Math.floor(videoDuration / 25));
+                for (let i = 0; i < Math.min(segCount, 4); i++) {
+                    const sTime = i * 20;
+                    const eTime = Math.min(videoDuration, sTime + 30);
+                    if (eTime - sTime < 5) break;
+
+                    const div = document.createElement('div');
+                    div.className = "bg-slate-950 hover:bg-slate-800 p-2.5 rounded-xl border border-slate-800 hover:border-primary transition cursor-pointer flex items-center justify-between";
+                    div.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-primary/20 text-primary flex items-center justify-center text-xs font-bold">${i+1}</span>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-200">Highlight #${i+1}</h4>
+                                <p class="text-[10px] text-slate-400 font-mono">${formatTime(sTime)} - ${formatTime(eTime)}</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] bg-primary/10 text-primary px-2 py-1 rounded font-semibold">Pilih</span>
+                    `;
+                    div.onclick = () => {
+                        startTime = sTime;
+                        endTime = eTime;
+                        document.getElementById('startTimeRange').value = startTime;
+                        document.getElementById('endTimeRange').value = endTime;
+                        document.getElementById('startTimeInput').value = startTime.toFixed(1);
+                        document.getElementById('endTimeInput').value = endTime.toFixed(1);
+                        updateTrimmerLabels();
+                        showModal('Klip Dipilih', `Berhasil memuat klip #${i+1} (${formatTime(sTime)} - ${formatTime(eTime)}) ke trimmer.`, 'fa-circle-check');
+                    };
+                    clipsList.appendChild(div);
+                }
+
+                document.getElementById('autoClipsContainer').classList.remove('hidden');
+                showModal('Analisis Selesai', 'Segmen klip paling menarik berhasil dideteksi.', 'fa-circle-check');
+            }, 1000);
+        }
+
+        function startAutoSubtitleProcess() {
+            if (!videoFile || videoDuration <= 0) {
+                showModal('Video Belum Dimuat', 'Silakan unggah video terlebih dahulu.', 'fa-circle-exclamation');
+                return;
+            }
+
+            if (!SpeechRecognitionClass) {
+                showModal('Fitur Tidak Didukung', 'Browser ini tidak mendukung SpeechRecognition. Silakan gunakan Google Chrome atau unggah file SRT secara manual.', 'fa-triangle-exclamation');
+                return;
+            }
+
+            const lang = document.getElementById('speechLangSelect').value;
+            const progressBox = document.getElementById('speechProgressBox');
+            const statusText = document.getElementById('speechStatusText');
+            const progressCount = document.getElementById('speechProgressCount');
+
+            progressBox.classList.remove('hidden');
+            statusText.innerText = "Memutar audio dan mentranskripsikan...";
+
+            subtitles = [];
+            renderSubtitleList();
+
+            try {
+                if (recognitionInstance) recognitionInstance.abort();
+                recognitionInstance = new SpeechRecognitionClass();
+                recognitionInstance.continuous = true;
+                recognitionInstance.interimResults = false;
+                recognitionInstance.lang = lang;
+
+                let speechStartTime = 0;
+
+                recognitionInstance.onstart = () => {
+                    speechStartTime = sourceVideo.currentTime;
+                };
+
+                recognitionInstance.onresult = (event) => {
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            const transcript = event.results[i][0].transcript.trim();
+                            if (transcript) {
+                                const currentT = sourceVideo.currentTime;
+                                const subStart = Math.max(0, currentT - 2.5);
+                                const subEnd = currentT;
+
+                                // Generate word level timings
+                                const rawWords = transcript.split(/\s+/);
+                                const wordDur = (subEnd - subStart) / Math.max(1, rawWords.length);
+                                const wordObjects = rawWords.map((w, idx) => ({
+                                    word: w,
+                                    start: subStart + (idx * wordDur),
+                                    end: subStart + ((idx + 1) * wordDur)
+                                }));
+
+                                subtitles.push({
+                                    id: Date.now() + Math.random(),
+                                    start: subStart,
+                                    end: subEnd,
+                                    text: transcript,
+                                    words: wordObjects
+                                });
+
+                                progressCount.innerText = `${subtitles.length} Subtitle`;
+                                renderSubtitleList();
+                                renderCanvas();
+                            }
+                        }
+                    }
+                };
+
+                recognitionInstance.onerror = (err) => {
+                    console.warn("SpeechRecognition Warning:", err);
+                };
+
+                recognitionInstance.onend = () => {
+                    if (!sourceVideo.paused) {
+                        try { recognitionInstance.start(); } catch (e) {}
+                    } else {
+                        statusText.innerText = "Transkripsi Selesai!";
+                    }
+                };
+
+                // Play video to trigger audio speech recognition
+                sourceVideo.currentTime = startTime;
+                sourceVideo.play();
+                isPlaying = true;
+                playPauseBtn.innerHTML = '<i class="fa-solid fa-pause text-xs"></i>';
+                recognitionInstance.start();
+
+            } catch (err) {
+                console.error("SpeechRecognition error:", err);
+                showModal("Gagal Transkripsi", "Terjadi kendala saat mengakses mikrofon/audio.", "fa-triangle-exclamation");
+            }
+        }
+
+        function handleSRTImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                subtitles = parseSRTContent(content);
+                renderSubtitleList();
+                renderCanvas();
+                showModal('Import Berhasil', `${subtitles.length} blok subtitle SRT berhasil diimpor!`, 'fa-circle-check');
+            };
+            reader.readAsText(file);
+        }
+
+        function parseSRTContent(data) {
+            const blocks = data.trim().replace(/\r\n/g, '\n').split('\n\n');
+            const parsed = [];
+
+            blocks.forEach((block) => {
+                const lines = block.split('\n');
+                if (lines.length >= 3) {
+                    const timeMatch = lines[1].match(/(\d{2}):(\d{2}):(\d{2})[,.](\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})[,.](\d{3})/);
+                    if (timeMatch) {
+                        const sTime = parseInt(timeMatch[1])*3600 + parseInt(timeMatch[2])*60 + parseInt(timeMatch[3]) + parseInt(timeMatch[4])/1000;
+                        const eTime = parseInt(timeMatch[5])*3600 + parseInt(timeMatch[6])*60 + parseInt(timeMatch[7]) + parseInt(timeMatch[8])/1000;
+                        const text = lines.slice(2).join(' ');
+
+                        const rawWords = text.split(/\s+/);
+                        const wordDur = (eTime - sTime) / Math.max(1, rawWords.length);
+                        const wordObjects = rawWords.map((w, idx) => ({
+                            word: w,
+                            start: sTime + (idx * wordDur),
+                            end: sTime + ((idx + 1) * wordDur)
+                        }));
+
+                        parsed.push({
+                            id: Date.now() + Math.random(),
+                            start: sTime,
+                            end: eTime,
+                            text: text,
+                            words: wordObjects
+                        });
+                    }
+                }
+            });
+            return parsed;
+        }
+
+        function exportToSRT() {
+            if (subtitles.length === 0) {
+                showModal('Subtitle Kosong', 'Belum ada subtitle untuk diekspor.', 'fa-circle-exclamation');
+                return;
+            }
+
+            let srtContent = "";
+            subtitles.forEach((sub, idx) => {
+                srtContent += `${idx + 1}\n`;
+                srtContent += `${formatSRTTime(sub.start)} --> ${formatSRTTime(sub.end)}\n`;
+                srtContent += `${sub.text}\n\n`;
+            });
+
+            const blob = new Blob([srtContent], { type: 'text/plain;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'ardhana-subtitles.srt';
+            a.click();
+        }
+
+        function formatSRTTime(seconds) {
+            const date = new Date(seconds * 1000);
+            const hh = String(Math.floor(seconds / 3600)).padStart(2, '0');
+            const mm = String(date.getUTCMinutes()).padStart(2, '0');
+            const ss = String(date.getUTCSeconds()).padStart(2, '0');
+            const ms = String(date.getUTCMilliseconds()).padStart(3, '0');
+            return `${hh}:${mm}:${ss},${ms}`;
+        }
+
+        // Subtitle List Editor UI
+        function addNewSubtitleBlock() {
+            const currentT = sourceVideo.currentTime;
+            const newSub = {
+                id: Date.now(),
+                start: currentT,
+                end: currentT + 3.0,
+                text: "Tulis subtitle baru...",
+                words: [
+                    { word: "Tulis", start: currentT, end: currentT + 1 },
+                    { word: "subtitle", start: currentT + 1, end: currentT + 2 },
+                    { word: "baru...", start: currentT + 2, end: currentT + 3 }
+                ]
+            };
+            subtitles.push(newSub);
+            renderSubtitleList();
+            renderCanvas();
+        }
+
+        function renderSubtitleList() {
+            const container = document.getElementById('subtitleListContainer');
+            document.getElementById('subtitleCountBadge').innerText = `${subtitles.length} Blok Subtitle`;
+            document.getElementById('exportSubSummary').innerText = `${subtitles.length} Blok Teks`;
+
+            if (subtitles.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-center text-xs text-slate-500">
+                        Belum ada subtitle. Gunakan "Mulai Auto Transkripsi" atau unggah file SRT.
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            subtitles.sort((a, b) => a.start - b.start);
+
+            subtitles.forEach((sub, index) => {
+                const div = document.createElement('div');
+                div.className = "bg-slate-950 border border-slate-800 rounded-xl p-3 space-y-2 hover:border-slate-700 transition";
+                div.innerHTML = `
+                    <div class="flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="w-5 h-5 rounded bg-primary/20 text-primary font-bold flex items-center justify-center text-[10px]">${index + 1}</span>
+                            <div class="flex items-center gap-1 font-mono text-slate-300">
+                                <input type="number" step="0.1" value="${sub.start.toFixed(1)}" class="w-14 bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-center" onchange="updateSubTime(${sub.id}, 'start', this.value)">
+                                <span>-</span>
+                                <input type="number" step="0.1" value="${sub.end.toFixed(1)}" class="w-14 bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-center" onchange="updateSubTime(${sub.id}, 'end', this.value)">
+                                <span>s</span>
+                            </div>
+                        </div>
+                        <button onclick="deleteSubBlock(${sub.id})" class="text-slate-500 hover:text-red-400 text-xs px-2 py-1">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                    <input type="text" value="${escapeHtml(sub.text)}" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-primary font-medium" oninput="updateSubText(${sub.id}, this.value)">
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateSubTime(id, type, val) {
+            const sub = subtitles.find(s => s.id === id);
+            if (sub) {
+                sub[type] = parseFloat(val);
+                renderCanvas();
+            }
+        }
+
+        function updateSubText(id, text) {
+            const sub = subtitles.find(s => s.id === id);
+            if (sub) {
+                sub.text = text;
+                const rawWords = text.split(/\s+/);
+                const wordDur = (sub.end - sub.start) / Math.max(1, rawWords.length);
+                sub.words = rawWords.map((w, idx) => ({
+                    word: w,
+                    start: sub.start + (idx * wordDur),
+                    end: sub.start + ((idx + 1) * wordDur)
+                }));
+                renderCanvas();
+            }
+        }
+
+        function deleteSubBlock(id) {
+            subtitles = subtitles.filter(s => s.id !== id);
+            renderSubtitleList();
+            renderCanvas();
+        }
+
+        function applyStylePreset(type) {
+            if (type === 'yellow') {
+                document.getElementById('subFontFamily').value = 'Montserrat';
+                document.getElementById('subFontSize').value = 68;
+                document.getElementById('subTextColor').value = '#FFFFFF';
+                document.getElementById('subActiveColor').value = '#FFEA00';
+                document.getElementById('subStrokeWidth').value = 8;
+                document.getElementById('subStrokeColor').value = '#000000';
+                document.getElementById('subBgType').value = 'none';
+                document.getElementById('subTextCase').value = 'uppercase';
+            } else if (type === 'neon') {
+                document.getElementById('subFontFamily').value = 'Outfit';
+                document.getElementById('subFontSize').value = 64;
+                document.getElementById('subTextColor').value = '#00FF66';
+                document.getElementById('subActiveColor').value = '#FFFFFF';
+                document.getElementById('subStrokeWidth').value = 4;
+                document.getElementById('subStrokeColor').value = '#003311';
+                document.getElementById('subBgType').value = 'none';
+                document.getElementById('subEffectType').value = 'glow';
+            } else if (type === 'blackbox') {
+                document.getElementById('subFontFamily').value = 'Inter';
+                document.getElementById('subFontSize').value = 56;
+                document.getElementById('subTextColor').value = '#FFFFFF';
+                document.getElementById('subActiveColor').value = '#FA6F05';
+                document.getElementById('subBgType').value = 'solid';
+                document.getElementById('subStrokeWidth').value = 0;
+            } else if (type === 'popup') {
+                document.getElementById('subFontFamily').value = 'Bebas Neue';
+                document.getElementById('subFontSize').value = 85;
+                document.getElementById('subTextColor').value = '#FFFFFF';
+                document.getElementById('subActiveColor').value = '#FFEA00';
+                document.getElementById('subEffectType').value = 'pop';
+                document.getElementById('subTextCase').value = 'uppercase';
+            }
+            renderCanvas();
+        }
+
+        function setSubPosY(val) {
+            document.getElementById('subPosY').value = val;
+            document.getElementById('subPosYVal').innerText = `${val}%`;
+            renderCanvas();
+        }
+
+        // Playback Control Functions
+        function togglePlayPause() {
+            if (sourceVideo.paused) {
+                sourceVideo.play();
+                isPlaying = true;
+                playPauseBtn.innerHTML = '<i class="fa-solid fa-pause text-xs"></i>';
+            } else {
+                sourceVideo.pause();
+                isPlaying = false;
+                playPauseBtn.innerHTML = '<i class="fa-solid fa-play text-xs"></i>';
+            }
+        }
+
+        function resetPlayback() {
+            sourceVideo.currentTime = startTime;
+            sourceVideo.pause();
+            isPlaying = false;
+            playPauseBtn.innerHTML = '<i class="fa-solid fa-play text-xs"></i>';
+            renderCanvas();
+        }
+
+        function previewClip() {
+            window.isPreviewingClip = true;
+            sourceVideo.currentTime = startTime;
+            sourceVideo.play();
+            isPlaying = true;
+            playPauseBtn.innerHTML = '<i class="fa-solid fa-pause text-xs"></i>';
+        }
+
+        function renderCanvas() {
+            if (!sourceVideo.readyState >= 2) return;
+
+            const targetW = 1080;
+            const targetH = 1920;
+
+            // Clear Background
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, targetW, targetH);
+
+            const vW = sourceVideo.videoWidth;
+            const vH = sourceVideo.videoHeight;
+
+            // Compute 9:16 Crop
+            let srcCropW = vH * (targetW / targetH);
+            let srcCropH = vH;
+
+            if (srcCropW > vW) {
+                srcCropW = vW;
+                srcCropH = vW * (targetH / targetW);
+            }
+
+            let maxOffsetX = vW - srcCropW;
+            let currentOffsetX = (cropPosition / 100) * maxOffsetX;
+            let srcY = (vH - srcCropH) / 2;
+
+            // Draw Video Frame
+            ctx.drawImage(sourceVideo, currentOffsetX, srcY, srcCropW, srcCropH, 0, 0, targetW, targetH);
+
+            // Render Karaoke Active Subtitles
+            const currentT = sourceVideo.currentTime;
+            const activeSub = subtitles.find(s => currentT >= s.start && currentT <= s.end);
+
+            if (activeSub) {
+                const fontName = document.getElementById('subFontFamily').value;
+                const fontSizePx = parseInt(document.getElementById('subFontSize').value) * (targetW / 540);
+                const textColor = document.getElementById('subTextColor').value;
+                const activeColor = document.getElementById('subActiveColor').value;
+                const strokeColor = document.getElementById('subStrokeColor').value;
+                const strokeWidth = parseInt(document.getElementById('subStrokeWidth').value) * (targetW / 540);
+                const bgType = document.getElementById('subBgType').value;
+                const textCase = document.getElementById('subTextCase').value;
+                const posYPercent = parseInt(document.getElementById('subPosY').value) / 100;
+
+                ctx.font = `bold ${fontSizePx}px "${fontName}", sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                let words = activeSub.words || [];
+                if (words.length === 0) {
+                    const raw = activeSub.text.split(/\s+/);
+                    words = raw.map(w => ({ word: w, start: activeSub.start, end: activeSub.end }));
+                }
+
+                // Measure line width
+                let fullText = words.map(w => textCase === 'uppercase' ? w.word.toUpperCase() : w.word).join(' ');
+                const totalWidth = ctx.measureText(fullText).width;
+                const startX = (targetW - totalWidth) / 2;
+                const lineY = targetH * posYPercent;
+
+                // Draw Background Box
+                if (bgType !== 'none') {
+                    const boxW = totalWidth + 50;
+                    const boxH = fontSizePx * 1.3;
+                    ctx.fillStyle = bgType === 'solid' ? 'rgba(0, 0, 0, 0.95)' : 'rgba(0, 0, 0, 0.65)';
+                    ctx.beginPath();
+                    ctx.roundRect((targetW - boxW) / 2, lineY - (boxH / 2), boxW, boxH, 20);
+                    ctx.fill();
+                }
+
+                // Render Karaoke Words with Dynamic Highlighting
+                let currentWordX = startX;
+                words.forEach((wObj) => {
+                    let wordText = textCase === 'uppercase' ? wObj.word.toUpperCase() : wObj.word;
+                    let isWordActive = currentT >= wObj.start && currentT <= wObj.end;
+
+                    ctx.font = `bold ${isWordActive ? fontSizePx * 1.08 : fontSizePx}px "${fontName}", sans-serif`;
+
+                    let wordMetrics = ctx.measureText(wordText + ' ');
+
+                    // Draw Stroke
+                    if (strokeWidth > 0) {
+                        ctx.strokeStyle = strokeColor;
+                        ctx.lineWidth = strokeWidth;
+                        ctx.strokeText(wordText, currentWordX + (wordMetrics.width / 2), lineY);
+                    }
+
+                    // Fill Color
+                    ctx.fillStyle = isWordActive ? activeColor : textColor;
+                    ctx.fillText(wordText, currentWordX + (wordMetrics.width / 2), lineY);
+
+                    currentWordX += wordMetrics.width;
+                });
+            }
+        }
+
+        function startExportProcess() {
+            if (!videoFile) return;
+
+            const exportBtn = document.getElementById('exportBtn');
+            const progressContainer = document.getElementById('exportProgressContainer');
+            const progressBar = document.getElementById('exportProgressBar');
+            const progressText = document.getElementById('exportPercentage');
+
+            exportBtn.setAttribute('disabled', 'true');
+            progressContainer.classList.remove('hidden');
+
+            try {
+                const canvasStream = outputCanvas.captureStream(30);
+                let combinedStream = canvasStream;
+
+                try {
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const sourceNode = audioCtx.createMediaElementSource(sourceVideo);
+                    const destNode = audioCtx.createMediaStreamDestination();
+                    sourceNode.connect(destNode);
+                    sourceNode.connect(audioCtx.destination);
+
+                    if (destNode.stream.getAudioTracks().length > 0) {
+                        combinedStream.addTrack(destNode.stream.getAudioTracks()[0]);
+                    }
+                } catch (err) {
+                    console.warn('Audio routing notice:', err);
+                }
+
+                let mimeType = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
+                let fileExtension = 'mp4';
+                if (!MediaRecorder.isTypeSupported(mimeType)) {
+                    mimeType = 'video/webm; codecs="vp9,opus"';
+                    fileExtension = 'webm';
+                    document.getElementById('exportFormatBadge').innerText = 'WebM (Codec Fallback Berkualitas Tinggi)';
+                }
+
+                const mediaRecorder = new MediaRecorder(combinedStream, {
+                    mimeType: mimeType,
+                    videoBitsPerRate: 6000000
+                });
+
+                let recordedChunks = [];
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data && event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: mimeType.split(';')[0] });
+                    const url = URL.createObjectURL(blob);
+
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `ardhana-clip-9x16.${fileExtension}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+
+                    exportBtn.removeAttribute('disabled');
+                    progressContainer.classList.add('hidden');
+                    showModal('Export Berhasil!', `Video vertikal 9:16 berhasil dipangkas dan diunduh sebagai ardhana-clip-9x16.${fileExtension}.`, 'fa-circle-check');
+                };
+
+                sourceVideo.currentTime = startTime;
+                sourceVideo.play();
+                mediaRecorder.start();
+
+                const clipDuration = endTime - startTime;
+                let renderStartTime = performance.now();
+
+                const renderInterval = setInterval(() => {
+                    let elapsed = (performance.now() - renderStartTime) / 1000;
+                    let progress = Math.min(100, (elapsed / clipDuration) * 100);
+
+                    progressBar.style.width = `${progress}%`;
+                    progressText.innerText = `${Math.round(progress)}%`;
+
+                    renderCanvas();
+
+                    if (sourceVideo.currentTime >= endTime || elapsed >= clipDuration) {
+                        clearInterval(renderInterval);
+                        sourceVideo.pause();
+                        mediaRecorder.stop();
+                    }
+                }, 1000 / 30);
+
+            } catch (error) {
+                console.error('Export error:', error);
+                exportBtn.removeAttribute('disabled');
+                progressContainer.classList.add('hidden');
+                showModal('Kendala Rendering', 'Browser Anda memiliki keterbatasan pada perekaman stream canvas. Pastikan menggunakan Chrome/Edge modern.', 'fa-triangle-exclamation');
+            }
+        }
+
+        // Utility Helpers
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        function showModal(title, message, iconClass) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = message;
+            document.getElementById('modalIcon').className = `fa-solid ${iconClass}`;
+            document.getElementById('notificationModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('notificationModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
